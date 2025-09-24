@@ -36,8 +36,7 @@ function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1 className="app__title">TODO Layer</h1>
-        <p className="app__subtitle">入力したリストを透過PNGでクリップボードにコピーできます</p>
+        <h1 className="app__title">やることリスト画像メーカー</h1>
       </header>
 
       <main className="app__body">

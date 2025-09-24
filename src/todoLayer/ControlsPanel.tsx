@@ -193,11 +193,11 @@ export const ControlsPanel = ({
       <button className="button button--secondary" type="button" onClick={onReset}>
         リセット
       </button>
-      <button className="button button--secondary" type="button" onClick={onDownload} disabled={downloadDisabled}>
-        PNG をダウンロード
-      </button>
-      <button className="button button--primary" type="button" onClick={onCopy} disabled={copyDisabled}>
+      <button className="button button--secondary" type="button" onClick={onCopy} disabled={copyDisabled}>
         {copyLabel}
+      </button>
+      <button className="button button--primary" type="button" onClick={onDownload} disabled={downloadDisabled}>
+        PNG をダウンロード
       </button>
     </div>
     {!clipboardSupported && (
