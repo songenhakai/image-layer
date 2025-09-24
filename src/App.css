@@ -284,3 +284,32 @@
     align-items: stretch;
   }
 }
+
+.advanced-settings {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  padding-top: 24px;
+}
+
+.advanced-settings__summary {
+  cursor: pointer;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4b5563;
+  list-style: none;
+  padding-bottom: 24px;
+}
+
+.advanced-settings__summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-settings[open] > summary {
+  padding-bottom: 0;
+}
+
+.advanced-settings__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}

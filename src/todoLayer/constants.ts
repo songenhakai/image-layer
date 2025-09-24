@@ -60,11 +60,11 @@ export const defaultRawText = ['今日やること', 'ラフを描く', '色ラ�
 
 export const defaultState: TodoLayerState = {
   rawText: defaultRawText,
-  textColor: TEXT_COLOR_PRESETS[0],
+  textColor: '#6366f1',
   strokeColor: STROKE_COLOR_PRESETS[1].value,
-  fontId: FONT_OPTIONS[0].id,
-  fontWeight: FONT_WEIGHT_OPTIONS[0].id,
+  fontId: 'noto-sans',
+  fontWeight: 'bold',
   maxWidth: 900,
   maxHeight: 1200,
-  outlineWidth: 4
+  outlineWidth: 8
 }
