@@ -59,10 +59,19 @@ export const PreviewStage = ({
 
             return (
               <Group key={`${line}-${index}`} y={y} x={STAGE_PADDING} listening={false}>
+                {isStrokeEnabled && (
+                  <Rect
+                    width={CHECKBOX_SIZE}
+                    height={CHECKBOX_SIZE}
+                    stroke={strokeColor}
+                    strokeWidth={3 + outlineWidth}
+                    cornerRadius={6}
+                  />
+                )}
                 <Rect
                   width={CHECKBOX_SIZE}
                   height={CHECKBOX_SIZE}
-                  stroke={strokeColor}
+                  stroke={textColor}
                   strokeWidth={3}
                   cornerRadius={6}
                 />
