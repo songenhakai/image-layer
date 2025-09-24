@@ -1,26 +1,18 @@
-import { useMemo, useState } from 'react'
 import './App.css'
 import { ControlsPanel } from './todoLayer/ControlsPanel'
 import { PreviewStage } from './todoLayer/PreviewStage'
-import { DIMENSION_LIMITS, FONT_OPTIONS } from './todoLayer/constants'
-import type { CopyState, TodoLayerState } from './todoLayer/types'
-import { clamp, splitLines } from './todoLayer/utils'
 import { useClipboardSupport } from './todoLayer/useClipboardSupport'
 import { useStageLayout } from './todoLayer/useStageLayout'
 import { useTodoLayerState } from './todoLayer/useTodoLayerState'
+import { useStageExporter } from './todoLayer/useStageExporter'
+import { useDerivedTodoState } from './todoLayer/useDerivedTodoState'
 
 function App() {
-  const { state, setState, reset } = useTodoLayerState()
-  const { fontId, fontWeight, rawText, strokeColor, textColor, maxWidth, maxHeight, outlineWidth } = state
+  const { state, reset, updateState, updateDimension } = useTodoLayerState()
+  const { fontWeight, strokeColor, textColor, maxWidth, maxHeight, outlineWidth } = state
   const clipboardSupported = useClipboardSupport()
-  const [copyState, setCopyState] = useState<CopyState>('idle')
 
-  const font = useMemo(
-    () => FONT_OPTIONS.find((option) => option.id === fontId) ?? FONT_OPTIONS[0],
-    [fontId]
-  )
-
-  const lines = useMemo(() => splitLines(rawText), [rawText])
+  const { font, lines } = useDerivedTodoState(state)
 
   const { stageRef, stageScale, scaledWidth, scaledHeight, isStrokeEnabled } = useStageLayout({
     lines,
@@ -32,93 +24,13 @@ function App() {
     strokeColor
   })
 
+  const { handleCopy, handleDownload, copyLabel, resetCopyState } = useStageExporter(stageRef)
+
   const outputSize = { width: scaledWidth, height: scaledHeight }
-
-  const updateState = <Key extends keyof TodoLayerState>(key: Key, value: TodoLayerState[Key]) => {
-    setState((prev) => ({ ...prev, [key]: value }))
-  }
-
-  const updateDimension = (key: 'maxWidth' | 'maxHeight', value: number) => {
-    if (Number.isNaN(value)) {
-      return
-    }
-
-    const [min, max] =
-      key === 'maxWidth'
-        ? [DIMENSION_LIMITS.minWidth, DIMENSION_LIMITS.maxWidth]
-        : [DIMENSION_LIMITS.minHeight, DIMENSION_LIMITS.maxHeight]
-
-    updateState(key, clamp(value, min, max))
-  }
-
-  const renderCopyLabel = () => {
-    if (copyState === 'success') {
-      return 'コピーしました'
-    }
-
-    if (copyState === 'error') {
-      return 'コピーできませんでした'
-    }
-
-    return 'クリップボードにコピー'
-  }
-
-  const getStageBlob = async () => {
-    const stage = stageRef.current
-    if (!stage) {
-      return null
-    }
-
-    const pixelRatio = Math.min(1, window.devicePixelRatio || 1)
-    const dataUrl = stage.toDataURL({ pixelRatio })
-    const response = await fetch(dataUrl)
-    return await response.blob()
-  }
-
-  const handleCopy = async () => {
-    try {
-      const blob = await getStageBlob()
-      if (!blob) {
-        return
-      }
-
-      const item = new ClipboardItem({ 'image/png': blob })
-      await navigator.clipboard.write([item])
-      setCopyState('success')
-    } catch (error) {
-      console.error('Failed to copy image', error)
-      setCopyState('error')
-    } finally {
-      window.setTimeout(() => {
-        setCopyState('idle')
-      }, 2000)
-    }
-  }
-
-  const handleDownload = async () => {
-    try {
-      const blob = await getStageBlob()
-      if (!blob) {
-        return
-      }
-
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      link.href = url
-      link.download = `todo-layer-${timestamp}.png`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Failed to download image', error)
-    }
-  }
 
   const handleReset = () => {
     reset()
-    setCopyState('idle')
+    resetCopyState()
   }
 
   return (
@@ -130,8 +42,8 @@ function App() {
 
       <main className="app__body">
         <ControlsPanel
-          rawText={rawText}
-          fontId={fontId}
+          rawText={state.rawText}
+          fontId={state.fontId}
           textColor={textColor}
           strokeColor={strokeColor}
           fontWeight={fontWeight}
@@ -148,7 +60,7 @@ function App() {
           onReset={handleReset}
           onCopy={handleCopy}
           onDownload={handleDownload}
-          copyLabel={renderCopyLabel()}
+          copyLabel={copyLabel}
           copyDisabled={!clipboardSupported || lines.length === 0}
           downloadDisabled={lines.length === 0}
           clipboardSupported={clipboardSupported}
@@ -164,9 +76,9 @@ function App() {
             height={scaledHeight}
             lines={lines}
             fontStack={font.stack}
-          textColor={textColor}
-          strokeColor={strokeColor}
-          fontWeight={fontWeight}
+            textColor={textColor}
+            strokeColor={strokeColor}
+            fontWeight={fontWeight}
             outlineWidth={outlineWidth}
             isStrokeEnabled={isStrokeEnabled}
           />
