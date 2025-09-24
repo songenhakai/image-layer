@@ -286,8 +286,7 @@
 }
 
 .advanced-settings {
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
-  padding-top: 24px;
+  /* No styles needed on the container itself */
 }
 
 .advanced-settings__summary {
@@ -297,19 +296,50 @@
   letter-spacing: 0.08em;
   color: #4b5563;
   list-style: none;
-  padding-bottom: 24px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #f3f4f6;
+  transition: background 0.2s ease, border-radius 0.2s ease;
+  position: relative;
+  padding-right: 40px; /* Space for icon */
+}
+
+.advanced-settings__summary:hover {
+  background: #e5e7eb;
 }
 
 .advanced-settings__summary::-webkit-details-marker {
   display: none;
 }
 
-.advanced-settings[open] > summary {
-  padding-bottom: 0;
+.advanced-settings__summary::after {
+  content: '›';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transition: transform 0.2s ease;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1;
+}
+
+.advanced-settings[open] > .advanced-settings__summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.advanced-settings[open] > .advanced-settings__summary::after {
+  transform: translateY(-50%) rotate(-90deg);
 }
 
 .advanced-settings__content {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
