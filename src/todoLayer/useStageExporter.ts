@@ -1,8 +1,8 @@
-import { useState, RefObject, useMemo } from 'react'
-import type Konva from 'konva'
+import { useState, useMemo, type RefObject } from 'react'
+import type { Stage } from 'konva/lib/Stage'
 import type { CopyState } from './types'
 
-const getStageBlob = async (stageRef: RefObject<Konva.Stage>): Promise<Blob | null> => {
+const getStageBlob = async (stageRef: RefObject<Stage | null>): Promise<Blob | null> => {
   const stage = stageRef.current
   if (!stage) {
     return null
@@ -14,7 +14,7 @@ const getStageBlob = async (stageRef: RefObject<Konva.Stage>): Promise<Blob | nu
   return await response.blob()
 }
 
-export const useStageExporter = (stageRef: RefObject<Konva.Stage>) => {
+export const useStageExporter = (stageRef: RefObject<Stage | null>) => {
   const [copyState, setCopyState] = useState<CopyState>('idle')
 
   const copyLabel = useMemo(() => {
